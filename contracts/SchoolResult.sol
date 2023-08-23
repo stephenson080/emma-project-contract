@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
 
 contract SchoolResult is Ownable {
     enum Semesters {
@@ -12,6 +13,14 @@ contract SchoolResult is Ownable {
     struct Session {
         string name;
         bool created;
+    }
+
+    struct StudentDetails {
+        string name;
+        string reqNo;
+        string department;
+        string code;
+        uint department_id;
     }
 
     struct Result {
@@ -346,6 +355,76 @@ contract SchoolResult is Ownable {
     function getNumberOfSessions() external view onlyOwner returns (uint) {
         uint num = no_of_sessions;
         return num - 1;
+    }
+
+    function _adminGetAllStudents()
+        external
+        view
+        onlyOwner
+        returns (StudentDetails[] memory)
+    {
+        uint num_clone = no_of_students;
+        uint num = num_clone - 1;
+        StudentDetails[] memory _students = new StudentDetails[](
+            no_of_students
+        );
+        for (uint i = 1; i <= num; i++) {
+            _students[i] = _getStudent(i);
+        }
+        return _students;
+    }
+
+    function student_get_profile(
+        address _address
+    ) external view returns (StudentDetails memory) {
+        uint _id = student_map[_address];
+        require(_id > 0, "Student's doesn't exist");
+        return _getStudent(_id);
+    }
+
+    function _getStudent(
+        uint _id
+    ) private view returns (StudentDetails memory) {
+        Student storage _student = students[_id];
+        Department storage _department = departments[_student.department];
+        StudentDetails memory _details = StudentDetails(
+            _student.name,
+            _student.regNo,
+            _department.name,
+            _department.dep_code,
+            _student.department
+        );
+        return _details;
+    }
+
+    function getAllCourse() external view returns (Course[] memory) {
+        uint num_clone = no_of_courses;
+        uint num = num_clone - 1;
+        Course[] memory _courses = new Course[](no_of_courses);
+        for (uint i = 1; i <= num; i++) {
+            _courses[i] = courses[i];
+        }
+        return _courses;
+    }
+
+    function getAllDepartment() external view returns (Department[] memory) {
+        uint num_clone = no_of_departments;
+        uint num = num_clone - 1;
+        Department[] memory _departments = new Department[](no_of_departments);
+        for (uint i = 1; i <= num; i++) {
+            _departments[i] = departments[i];
+        }
+        return _departments;
+    }
+
+    function getAllSessions() external view returns (Session[] memory) {
+        uint num_clone = no_of_sessions;
+        uint num = num_clone - 1;
+        Session[] memory _sessions = new Session[](no_of_sessions);
+        for (uint i = 1; i <= num; i++) {
+            _sessions[i] = sessions[i];
+        }
+        return _sessions;
     }
 
     modifier checkAddress0(address _address) {

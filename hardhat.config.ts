@@ -1,7 +1,10 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import { config } from "dotenv";
 
-const config: HardhatUserConfig = {
+config();
+
+const _config: HardhatUserConfig = {
   solidity: "0.8.19",
   defaultNetwork: "hardhat",
   networks: {
@@ -19,4 +22,4 @@ const config: HardhatUserConfig = {
   },
 };
 
-export default config;
+export default _config;
